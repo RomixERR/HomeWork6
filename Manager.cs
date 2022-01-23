@@ -70,11 +70,32 @@ namespace HV7
             Console.WriteLine($"{"Дата рождения:",40} {employer.birthDate.ToShortDateString()}");
             Console.WriteLine($"{"Место рождения:",40} { employer.birthPlace}");
         }
+        /// <summary>
+        /// Публичный метод. Печатает информацию на экране для всех сотрудников
+        /// </summary>
+        public void PrintEmployersInfo()
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                PrintEmployerInfo(employer[i]);
+            }
+        }
+        /// <summary>
+        /// Публичный метод. Печатает информацию на экране для сотрудника
+        /// </summary>
+        /// <param name="ID">ID сотрудника</param>
+        public void PrintEmployersInfo(long ID)
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                if (employer[i].ID==ID) PrintEmployerInfo(employer[i]);
+            }
+        }
 
         /// <summary>
         /// Очищает консоль и выводит стандартный заголовок
         /// </summary>
-        void TitleClear()
+        public void TitleClear()
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -124,8 +145,6 @@ namespace HV7
             Console.WriteLine($"Файл {fileName} успешно загружен.");
         }
 
-
-
         /// <summary>
         /// Сохранение файла базы данных
         /// </summary>
@@ -141,35 +160,65 @@ namespace HV7
                 if (!(Console.ReadLine().ToLower() == "y")) return;
             }
 
-
-            using (StreamWriter stream = new StreamWriter(File.Open(fileName, FileMode.Append)))
+            try
             {
-                stream.WriteLine();
-                stream.Write(employer.ID);
-                stream.Write(separator);
-                stream.Write(employer.dateTime);
-                stream.Write(separator);
-                stream.Write(employer.fio);
-                stream.Write(separator);
-                stream.Write(employer.Age);
-                stream.Write(separator);
-                stream.Write(employer.height);
-                stream.Write(separator);
-                stream.Write(employer.birthDate.ToShortDateString());
-                stream.Write(separator);
-                stream.Write(employer.birthPlace);
+                using (StreamWriter writer = new StreamWriter(File.Open(fileName, FileMode.OpenOrCreate)))
+                {
+                    writer.Write(CombineData(this.Count, employer));
+                }
+                Console.WriteLine("Файл сохранён.");
             }
-            Console.WriteLine("Запись сохранена.");
-            Console.WriteLine("Нажмите Enter для продолжения");
-            Console.ReadKey();
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ОШИБКА. Файл не записан! {ex.Message}");
+            }
         }
+        /// <summary>
+        /// Обьединяет (сериализует) данные структуры Employer в строку (одна линия), для передачи в поток 
+        /// </summary>
+        /// <param name="employer">Объект для сериализации</param>
+        /// <returns></returns>
+        string CombineData(Employer employer)
+        {
+            return CombineData(1, employer);
+        }
+
+        /// <summary>
+        /// Обьединяет (сериализует) данные структуры Employer в строку (много линий), для передачи в поток
+        /// </summary>
+        /// <param name="count">Количество объектов в массиве (количество будующих линий) для сериализации</param>
+        /// <param name="employers">Объект для сериализации</param>
+        /// <returns></returns>
+        string CombineData(int count, params Employer[] employers)
+        {
+            string res="";
+            for(int i = 0; i < count; i++)
+            {
+                res+=employers[i].ID.ToString();
+                res+=separator;
+                res+=employers[i].dateTime.ToString();
+                res+=separator;
+                res+=employers[i].fio.ToString();
+                res+=separator;
+                res+=employers[i].Age.ToString();
+                res+=separator;
+                res+=employers[i].height.ToString();
+                res+=separator;
+                res+=employers[i].birthDate.ToShortDateString();
+                res+=separator;
+                res+=employers[i].birthPlace.ToString();
+                res += Environment.NewLine;
+            }
+            return res;
+        }
+
         /// <summary>
         /// Публичный метод. Добавление НОВОГО работника и сохранение в базу данных
         /// </summary>
         public void AddNewRecord()
         {
             Employer employer = new Employer();
-            employer.ID = Input<long>("Введите ID работника:");
+            employer.ID = this.Count+1;//Input<long>("Введите ID работника:");
             employer.dateTime = DateTime.Now;
             employer.fio = Input<string>("Введите ФИО:");
             employer.height = Input<int>("Введите рост:");
@@ -177,6 +226,43 @@ namespace HV7
             employer.birthPlace = Input<string>("Введите место рождения:");
             Add(employer);
             SaveFile(this.fileName);
+        }
+        public void EditRecord()
+        {
+            Employer employer = new Employer();
+            long ID = Input<long>("Введите ID работника:");
+            if(FindEmployerByID(ID, ref employer))
+            {
+                employer.dateTime = DateTime.Now;
+                employer.fio = Input<string>("Введите ФИО:");
+                employer.height = Input<int>("Введите рост:");
+                employer.birthDate = Input<DateTime>("Введите дату рождения:");
+                employer.birthPlace = Input<string>("Введите место рождения:");
+            }
+            else
+            {
+                Console.WriteLine("Работник не найден!");
+            }
+            SaveFile(this.fileName);
+        }
+        /// <summary>
+        /// Ищет работника по параметру если находит возвращает true
+        /// Возвращает первое попавшееся совпадение, если их несколько
+        /// </summary>
+        /// <param name="ID">Параметр для поиска</param>
+        /// <param name="result">Возвращаемый объект</param>
+        /// <returns></returns>
+        bool FindEmployerByID(long ID, ref Employer result)
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                if (employer[i].ID == ID)
+                {
+                    result = employer[i];
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>

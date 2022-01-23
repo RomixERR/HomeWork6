@@ -14,9 +14,8 @@ namespace HV7
             Manager manager = new Manager("Employeses.db");
             while (true)
             {
-                TitleClear();
-                Console.WriteLine("1 - Вывести данные на экран");
-                Console.WriteLine("2 - заполнить данные и добавить новую запись в конец файла");
+                Console.WriteLine("1 - Вывести все данные на экран");
+                Console.WriteLine("2 - Заполнить данные и добавить новую запись в конец файла");
                 Console.WriteLine("0 или q - Выход из приложения");
                 switch (Console.ReadLine().ToLower())
                 {
@@ -24,9 +23,13 @@ namespace HV7
                     case "q":
                     case "й":
                         break;
-                    case "1": Read();
+                    case "1":
+                        manager.TitleClear();
+                        manager.PrintEmployersInfo();
                         continue;
-                    case "2": Write();
+                    case "2":
+                        manager.TitleClear();
+                        manager.AddNewRecord();
                         continue;
                     default:
                         Console.WriteLine("Введена не распознаная команда!");
@@ -36,11 +39,5 @@ namespace HV7
 
             } 
         }
-
-        
-
-        
     }
-
-    
 }
