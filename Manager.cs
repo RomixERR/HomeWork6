@@ -173,6 +173,28 @@ namespace HV7
                 Console.WriteLine($"ОШИБКА. Файл не записан! {ex.Message}");
             }
         }
+        public void DeleteRecord()
+        {
+            long ID = Input<long>("Введите ID работника:");
+
+            if (FindEmployerByID(ID, ref employer, out int index))
+            {   //Тут сдвигаем в пустое место оставшихся работников
+                Console.WriteLine($"Файл базы данных {new FileInfo(fileName).FullName} будет создан.");
+                Console.WriteLine("Для подтверждения введите y , для отмены n");
+                if (!(Console.ReadLine().ToLower() == "y")) return;
+
+                    
+            }
+            else
+            {
+                Console.WriteLine("Работник не найден!");
+            }
+            SaveFile(this.fileName);
+
+
+
+        }
+
         /// <summary>
         /// Обьединяет (сериализует) данные структуры Employer в строку (одна линия), для передачи в поток 
         /// </summary>
@@ -218,7 +240,14 @@ namespace HV7
         public void AddNewRecord()
         {
             Employer employer = new Employer();
-            employer.ID = this.Count+1;//Input<long>("Введите ID работника:");
+            if (Count > 0)
+            {
+                employer.ID = this.employer[Count - 1].ID + 1;//this.Count+1;//Input<long>("Введите ID работника:");
+            }
+            else
+            {
+                employer.ID = 1;
+            }
             employer.dateTime = DateTime.Now;
             employer.fio = Input<string>("Введите ФИО:");
             employer.height = Input<int>("Введите рост:");

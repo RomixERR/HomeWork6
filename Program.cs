@@ -17,6 +17,7 @@ namespace HV7
                 Console.WriteLine("1 - Вывести все данные на экран");
                 Console.WriteLine("2 - Заполнить данные и добавить новую запись");
                 Console.WriteLine("3 - Редактировать запись по ID и сохранить файл");
+                Console.WriteLine("4 - Удалить запись по ID и сохранить файл");
                 Console.WriteLine("0 или q - Выход из приложения");
                 switch (Console.ReadLine().ToLower())
                 {
