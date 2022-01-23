@@ -50,6 +50,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="bin\Debug\Employeses — копия.db" />
+    <None Include="bin\Debug\Employeses.db" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bin\Debug\HV7.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

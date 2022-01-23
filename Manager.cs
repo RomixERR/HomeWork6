@@ -83,6 +83,23 @@ namespace HV7
             }
         }
         /// <summary>
+        /// Публичный метод. печатает инфу в заданном диапазоне дат
+        /// </summary>
+        public void PrintEmployersInfoWithDateRange()
+        {
+            DateTime start = Input<DateTime>("Введите нижний интервал дат для отображения", DateTime.Now.Date);
+            DateTime end  = Input<DateTime>("Введите верхний интервал дат для отображения", DateTime.Now);
+
+            for (int i = 0; i < Count; i++)
+            {
+                if(start <= employer[i].dateTime && employer[i].dateTime <= end)
+                {
+                    PrintEmployerInfo(employer[i]);
+                }
+            }
+        }
+
+        /// <summary>
         /// Публичный метод. Печатает информацию на экране для сотрудника
         /// </summary>
         /// <param name="ID">ID сотрудника</param>

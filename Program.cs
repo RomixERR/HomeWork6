@@ -32,9 +32,9 @@ namespace HV7
                 Console.WriteLine("2 - Вывести все данные на экран");
                 Console.WriteLine("3 - Создание записи");
                 Console.WriteLine("4 - Редактирование записи по ID");
-                Console.WriteLine("5 - Удаление записи по ID");
-                Console.WriteLine("6 - Просмотр записей в выбранном диапазоне дат");
-                Console.WriteLine("7 - Просмотр записей с сортировкой по возрастанию и убыванию даты");
+                Console.WriteLine("5 - Просмотр записей в выбранном диапазоне дат");
+                Console.WriteLine("6 - Cортировка по возрастанию и убыванию даты");
+                Console.WriteLine("7 - Удаление записи по ID");
                 Console.WriteLine("0 или q - Выход из приложения");
                 switch (Console.ReadLine().ToLower())
                 {
@@ -59,6 +59,14 @@ namespace HV7
                         manager.EditRecord();
                         continue;
                     case "5":
+                        manager.TitleClear();
+                        manager.PrintEmployersInfoWithDateRange();
+                        continue;
+                    case "6":
+                        manager.TitleClear();
+                        
+                        continue;
+                    case "7":
                         manager.TitleClear();
                         manager.DeleteRecord();
                         continue;
