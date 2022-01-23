@@ -19,9 +19,5 @@ namespace HV7
         public int height;
         public DateTime birthDate;
         public string birthPlace;
-
-
     }
-
-    
 }

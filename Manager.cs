@@ -86,7 +86,10 @@ namespace HV7
             Console.WriteLine($"{"Место рождения:",40} { employer.birthPlace}");
         }
     
-
+        /// <summary>
+        /// Подметод печати. Печатает что дали
+        /// </summary>
+        /// <param name="employer">Дали</param>
         void PrintEmployersInfo(Employer[] employer)
         {
             for (int i = 0; i < Count; i++)
@@ -98,7 +101,10 @@ namespace HV7
             }
             Console.ReadKey();
         }
-
+        /// <summary>
+        /// Публичный метод. Печатает информацию о всех работниках на экране
+        /// Применяет все сортировки
+        /// </summary>
         public void PrintEmployersInfo()
         {
             IEnumerable<Employer> employers;
@@ -125,21 +131,27 @@ namespace HV7
             PrintEmployersInfo(employers.ToArray());
             
         }
-
+        /// <summary>
+        /// Установка диапазона дат для сортировки по датам
+        /// </summary>
         void SetSortingDateRange()
         {
             start = Input<DateTime>("Введите нижний интервал дат для отображения", DateTime.Now.Date);
             end  = Input<DateTime>("Введите верхний интервал дат для отображения", DateTime.Now);
             Console.WriteLine("Диапазон дат устанолвлен!");
         }
-
+        /// <summary>
+        /// Сброс диапазона дат для сортировки по датам
+        /// </summary>
         void SetSortingDataRangeDefault()
         {
             Console.WriteLine("Диапазон дат сброшен!");
             start = DateTime.MinValue;
             end = DateTime.MaxValue;
         }
-
+        /// <summary>
+        /// Устанавливает сортировки (вызывает подменю)
+        /// </summary>
         public void SetSorting()
         {
             while (true)
@@ -371,6 +383,9 @@ namespace HV7
             Add(employer);
             SaveFile(this.fileName);
         }
+        /// <summary>
+        /// Редакторование записи
+        /// </summary>
         public void EditRecord()
         {
             long ID = Input<long>("Введите ID работника:");
