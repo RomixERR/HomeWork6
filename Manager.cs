@@ -12,6 +12,7 @@ namespace HV7
         string fileName;
         char separator;
         int Count;
+        long lastID;
         Employer[] employer;
         /// <summary>
         /// Конструктор
@@ -25,6 +26,7 @@ namespace HV7
             this.separator = separator;
             this.employer = new Employer[startBuferSize];
             this.Count = 0;
+            this.lastID = 0;
             LoadFile(this.fileName);
         }
         public Manager(string fileName, char separator):this(fileName, separator,100)
@@ -84,12 +86,18 @@ namespace HV7
         /// Публичный метод. Печатает информацию на экране для сотрудника
         /// </summary>
         /// <param name="ID">ID сотрудника</param>
-        public void PrintEmployersInfo(long ID)
+        public void PrintEmployerInfo()
         {
-            for (int i = 0; i < Count; i++)
+            long ID = Input<long>("Введите ID работника:");
+            if (FindEmployerByID(ID, out Employer employer, out int index))
             {
-                if (employer[i].ID==ID) PrintEmployerInfo(employer[i]);
+                PrintEmployerInfo(this.employer[index]);
             }
+            else
+            {
+                Console.WriteLine("Работник не найден!");
+            }
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -129,12 +137,11 @@ namespace HV7
                 Console.ReadLine();
                 return;
             }
-
-            //List <Employer> employers = new List<Employer>();
             string line = "";
 
             using (StreamReader stream = new StreamReader(File.Open(fileName, FileMode.Open)))
             {
+                lastID = Convert.ToInt64(stream.ReadLine());
                 while (!stream.EndOfStream)
                 {
                     line = stream.ReadLine();
@@ -144,7 +151,6 @@ namespace HV7
             }
             Console.WriteLine($"Файл {fileName} успешно загружен.");
         }
-
         /// <summary>
         /// Сохранение файла базы данных
         /// </summary>
@@ -164,7 +170,8 @@ namespace HV7
             {
                 using (StreamWriter writer = new StreamWriter(File.Open(fileName, FileMode.Create)))
                 {
-                    writer.Write(CombineData(this.Count, employer));
+                    writer.WriteLine(lastID); //Последний ID
+                    writer.Write(CombineData(this.Count, employer)); //запись основных данных
                 }
                 Console.WriteLine("Файл сохранён.");
             }
@@ -244,14 +251,16 @@ namespace HV7
         public void AddNewRecord()
         {
             Employer employer = new Employer();
-            if (Count > 0)
-            {
-                employer.ID = this.employer[Count - 1].ID + 1;//this.Count+1;//Input<long>("Введите ID работника:");
-            }
-            else
-            {
-                employer.ID = 1;
-            }
+            //if (Count > 0)
+            //{
+            //    employer.ID = this.employer[Count - 1].ID + 1;//this.Count+1;//Input<long>("Введите ID работника:");
+            //}
+            //else
+            //{
+            //    employer.ID = 1;
+            //}
+            lastID++;
+            employer.ID = lastID;    
             employer.dateTime = DateTime.Now;
             employer.fio = Input<string>("Введите ФИО:");
             employer.height = Input<int>("Введите рост:");
