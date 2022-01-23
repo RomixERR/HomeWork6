@@ -162,7 +162,7 @@ namespace HV7
 
             try
             {
-                using (StreamWriter writer = new StreamWriter(File.Open(fileName, FileMode.OpenOrCreate)))
+                using (StreamWriter writer = new StreamWriter(File.Open(fileName, FileMode.Create)))
                 {
                     writer.Write(CombineData(this.Count, employer));
                 }
@@ -172,27 +172,31 @@ namespace HV7
             {
                 Console.WriteLine($"ОШИБКА. Файл не записан! {ex.Message}");
             }
+            Console.ReadKey();
         }
         public void DeleteRecord()
         {
             long ID = Input<long>("Введите ID работника:");
 
-            if (FindEmployerByID(ID, ref employer, out int index))
-            {   //Тут сдвигаем в пустое место оставшихся работников
-                Console.WriteLine($"Файл базы данных {new FileInfo(fileName).FullName} будет создан.");
+            if (FindEmployerByID(ID, out Employer employer, out int index))
+            {   
+                Console.WriteLine($"Работник {this.employer[index].fio} будет удалён.");
                 Console.WriteLine("Для подтверждения введите y , для отмены n");
-                if (!(Console.ReadLine().ToLower() == "y")) return;
-
-                    
+                if (!(Console.ReadLine().ToLower() == "y")) return; //Если передумал то return
+                //Тут сдвигаем на текущего рабочего следующего -1
+                Count--;
+                for (int i = index; i < Count; i++)
+                {
+                    this.employer[i] = this.employer[i + 1];
+                }
+                SaveFile(this.fileName);
+                Console.WriteLine($"Работник {ID} крякнул.");
             }
             else
             {
                 Console.WriteLine("Работник не найден!");
             }
-            SaveFile(this.fileName);
-
-
-
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -258,9 +262,8 @@ namespace HV7
         }
         public void EditRecord()
         {
-            Employer employer = new Employer();
             long ID = Input<long>("Введите ID работника:");
-            if(FindEmployerByID(ID, ref employer,out int index))
+            if(FindEmployerByID(ID, out Employer employer,out int index))
             {
                 employer.dateTime = DateTime.Now;
                 employer.fio = Input<string>("Введите ФИО:", employer.fio);
@@ -268,12 +271,13 @@ namespace HV7
                 employer.birthDate = Input<DateTime>("Введите дату рождения:", employer.birthDate);
                 employer.birthPlace = Input<string>("Введите место рождения:", employer.birthPlace);
                 this.employer[index] = employer;
+                SaveFile(this.fileName);
             }
             else
             {
                 Console.WriteLine("Работник не найден!");
             }
-            SaveFile(this.fileName);
+            Console.ReadKey();
         }
         /// <summary>
         /// Ищет работника по параметру если находит возвращает true
@@ -282,7 +286,7 @@ namespace HV7
         /// <param name="ID">Параметр для поиска</param>
         /// <param name="result">Возвращаемый объект</param>
         /// <returns></returns>
-        bool FindEmployerByID(long ID, ref Employer result,out int index)
+        bool FindEmployerByID(long ID, out Employer result,out int index)
         {
             index= 0;
             for (int i = 0; i < Count; i++)
@@ -294,6 +298,7 @@ namespace HV7
                     return true;
                 }
             }
+            result = new Employer();
             return false;
         }
 

@@ -37,6 +37,10 @@ namespace HV7
                         manager.TitleClear();
                         manager.EditRecord();
                         continue;
+                    case "4":
+                        manager.TitleClear();
+                        manager.DeleteRecord();
+                        continue;
                     default:
                         Console.WriteLine("Введена не распознаная команда!");
                         continue;
