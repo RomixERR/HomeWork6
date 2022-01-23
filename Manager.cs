@@ -9,10 +9,20 @@ namespace HV7
 {
     public struct Manager
     {
+        public enum ESort
+        {
+            Default,
+            SortUp,
+            SortDown,
+        }
+        public ESort sort;
+
         string fileName;
         char separator;
         int Count;
         long lastID;
+        DateTime start;
+        DateTime end;
         Employer[] employer;
         /// <summary>
         /// Конструктор
@@ -27,6 +37,9 @@ namespace HV7
             this.employer = new Employer[startBuferSize];
             this.Count = 0;
             this.lastID = 0;
+            this.start = DateTime.MinValue;
+            this.end = DateTime.MaxValue;
+            this.sort = ESort.Default;
             LoadFile(this.fileName);
         }
         public Manager(string fileName, char separator):this(fileName, separator,100)
@@ -72,30 +85,94 @@ namespace HV7
             Console.WriteLine($"{"Дата рождения:",40} {employer.birthDate.ToShortDateString()}");
             Console.WriteLine($"{"Место рождения:",40} { employer.birthPlace}");
         }
-        /// <summary>
-        /// Публичный метод. Печатает информацию на экране для всех сотрудников
-        /// </summary>
-        public void PrintEmployersInfo()
-        {
-            for (int i = 0; i < Count; i++)
-            {
-                PrintEmployerInfo(employer[i]);
-            }
-        }
-        /// <summary>
-        /// Публичный метод. печатает инфу в заданном диапазоне дат
-        /// </summary>
-        public void PrintEmployersInfoWithDateRange()
-        {
-            DateTime start = Input<DateTime>("Введите нижний интервал дат для отображения", DateTime.Now.Date);
-            DateTime end  = Input<DateTime>("Введите верхний интервал дат для отображения", DateTime.Now);
+    
 
+        void PrintEmployersInfo(Employer[] employer)
+        {
             for (int i = 0; i < Count; i++)
             {
-                if(start <= employer[i].dateTime && employer[i].dateTime <= end)
+                if (start <= employer[i].dateTime && employer[i].dateTime <= end)
                 {
                     PrintEmployerInfo(employer[i]);
                 }
+            }
+        }
+
+        public void PrintEmployersInfo()
+        {
+            IEnumerable<Employer> employers;
+            
+            switch (sort) //сортировка
+            {
+                case ESort.SortUp:
+                    Array.Resize(ref this.employer, Count);
+                    employers = from word in this.employer
+                                                      orderby word.dateTime
+                                                      select word;
+                    break;
+                case ESort.SortDown:
+                    Array.Resize(ref this.employer, Count);
+                    employers = from word in this.employer
+                                                      orderby word.dateTime descending
+                                                      select word;
+                    break;
+                default:
+                    employers = this.employer;
+                    break;
+            }
+
+            PrintEmployersInfo(employers.ToArray());
+        }
+
+        void SetSortingDateRange()
+        {
+            start = Input<DateTime>("Введите нижний интервал дат для отображения", DateTime.Now.Date);
+            end  = Input<DateTime>("Введите верхний интервал дат для отображения", DateTime.Now);
+            Console.WriteLine("Диапазон дат устанолвлен!");
+        }
+
+        void SetSortingDataRangeDefault()
+        {
+            Console.WriteLine("Диапазон дат сброшен!");
+            start = DateTime.MinValue;
+            end = DateTime.MaxValue;
+        }
+
+        public void SetSorting()
+        {
+            while (true)
+            {
+                Console.WriteLine("Меню сортировки данных");
+                Console.WriteLine("1 - сброс диапазона дат");
+                Console.WriteLine("2 - установка диапазона дат");
+                Console.WriteLine("3 - сортировка по умолчанию");
+                Console.WriteLine("4 - сортировка по дате с самой ранней");
+                Console.WriteLine("5 - сортировка по дате с самой поздней");
+                Console.WriteLine("0 - ничо не надо");
+                switch (Console.ReadLine().ToLower())
+                {
+                    case "0": break;
+                    case "1":
+                        SetSortingDataRangeDefault();
+                        break;
+                    case "2":
+                        SetSortingDateRange();
+                        break;
+                    case "3":
+                        sort = ESort.Default;
+                        break;
+                    case "4":
+                        sort = ESort.SortUp;
+                        break;
+                    case "5":
+                        sort = ESort.SortDown;
+                        break;
+                    default:
+                        Console.WriteLine("Команда не распознана!");
+                        continue;
+                }
+                TitleClear();
+                break;
             }
         }
 
