@@ -28,6 +28,7 @@ namespace HV7
             Manager manager = new Manager("Employeses.db");
             while (true)
             {
+                manager.TitleClear();
                 Console.WriteLine("1 - Просмотр записи");
                 Console.WriteLine("2 - Вывести все данные на экран");
                 Console.WriteLine("3 - Создание записи");

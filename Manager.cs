@@ -96,6 +96,7 @@ namespace HV7
                     PrintEmployerInfo(employer[i]);
                 }
             }
+            Console.ReadKey();
         }
 
         public void PrintEmployersInfo()
@@ -122,6 +123,7 @@ namespace HV7
             }
 
             PrintEmployersInfo(employers.ToArray());
+            
         }
 
         void SetSortingDateRange()
@@ -199,9 +201,15 @@ namespace HV7
         /// </summary>
         public void TitleClear()
         {
+            string  info =  $"СОРТИРОВКА: {sort.ToString()}, ДИАПАЗОН ДАТ: {start.ToShortDateString()} - {end.ToShortDateString()}\n";
+                    info += $"КОЛИЧЕСТВО ЗАПИСЕЙ В БАЗЕ: {Count}, ПОСЛЕДНИЙ ID: {lastID}";
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Справочник «Сотрудники»");
+            Console.WriteLine("=======================");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(info);
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("=======================");
             Console.ForegroundColor = ConsoleColor.White;
         }
