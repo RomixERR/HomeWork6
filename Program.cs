@@ -15,7 +15,8 @@ namespace HV7
             while (true)
             {
                 Console.WriteLine("1 - Вывести все данные на экран");
-                Console.WriteLine("2 - Заполнить данные и добавить новую запись в конец файла");
+                Console.WriteLine("2 - Заполнить данные и добавить новую запись");
+                Console.WriteLine("3 - Редактировать запись по ID и сохранить файл");
                 Console.WriteLine("0 или q - Выход из приложения");
                 switch (Console.ReadLine().ToLower())
                 {
@@ -30,6 +31,10 @@ namespace HV7
                     case "2":
                         manager.TitleClear();
                         manager.AddNewRecord();
+                        continue;
+                    case "3":
+                        manager.TitleClear();
+                        manager.EditRecord();
                         continue;
                     default:
                         Console.WriteLine("Введена не распознаная команда!");

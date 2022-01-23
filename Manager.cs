@@ -231,13 +231,14 @@ namespace HV7
         {
             Employer employer = new Employer();
             long ID = Input<long>("Введите ID работника:");
-            if(FindEmployerByID(ID, ref employer))
+            if(FindEmployerByID(ID, ref employer,out int index))
             {
                 employer.dateTime = DateTime.Now;
-                employer.fio = Input<string>("Введите ФИО:");
-                employer.height = Input<int>("Введите рост:");
-                employer.birthDate = Input<DateTime>("Введите дату рождения:");
-                employer.birthPlace = Input<string>("Введите место рождения:");
+                employer.fio = Input<string>("Введите ФИО:", employer.fio);
+                employer.height = Input<int>("Введите рост:", employer.height);
+                employer.birthDate = Input<DateTime>("Введите дату рождения:", employer.birthDate);
+                employer.birthPlace = Input<string>("Введите место рождения:", employer.birthPlace);
+                this.employer[index] = employer;
             }
             else
             {
@@ -252,13 +253,15 @@ namespace HV7
         /// <param name="ID">Параметр для поиска</param>
         /// <param name="result">Возвращаемый объект</param>
         /// <returns></returns>
-        bool FindEmployerByID(long ID, ref Employer result)
+        bool FindEmployerByID(long ID, ref Employer result,out int index)
         {
+            index= 0;
             for (int i = 0; i < Count; i++)
             {
                 if (employer[i].ID == ID)
                 {
                     result = employer[i];
+                    index  = i;
                     return true;
                 }
             }
@@ -282,6 +285,43 @@ namespace HV7
                     Console.WriteLine(msg);
                     //Object.ReferenceEquals(typeof(T), typeof(int)))
                     res = (T)Convert.ChangeType(Console.ReadLine(), typeof(T));
+                    flag = false;
+                }
+                catch
+                {
+                    Console.WriteLine("НЕ КОРРЕКТНЫЙ ВВОД!!!");
+                }
+
+            } while (flag);
+            return res;
+        }
+        /// <summary>
+        /// Мой личный улучшенный метод пользовательского ввода со значением по умолчанию
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="msg"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public T Input<T>(string msg,T defaultValue)
+        {
+            T res = default(T);
+            bool flag = true;
+            string rl;
+            do
+            {
+                try
+                {
+                    Console.WriteLine(msg);
+                    Console.Write("Пустое поле заменится на -> ");
+                    Console.WriteLine(defaultValue);
+                    rl = Console.ReadLine();
+                    if(rl == "") {
+                        res = defaultValue;
+                    }
+                    else
+                    {
+                        res = (T)Convert.ChangeType(rl, typeof(T));
+                    }
                     flag = false;
                 }
                 catch
