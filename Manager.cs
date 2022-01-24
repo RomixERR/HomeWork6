@@ -17,20 +17,13 @@ namespace HV7
         }
         public ESort sort;
 
-        string fileName;
-        char separator;
-        int Count;
-        long lastID;
-        DateTime start;
-        DateTime end;
-        Employer[] employer;
         /// <summary>
         /// Конструктор
         /// </summary>
         /// <param name="fileName">Обязательный параметр</param>
         /// <param name="separator">Сепаратор разделитель каждой строки-записи</param>
         /// <param name="startBuferSize">Начальный буфер (количество строк-записей в файле)</param>
-        public Manager(string fileName, char separator,int startBuferSize)
+        public Manager(string fileName, char separator, int startBuferSize)
         {
             this.fileName = fileName;
             this.separator = separator;
@@ -42,20 +35,27 @@ namespace HV7
             this.sort = ESort.Default;
             LoadFile(this.fileName);
         }
-        public Manager(string fileName, char separator):this(fileName, separator,100)
+        public Manager(string fileName, char separator) : this(fileName, separator, 100)
         {
         }
-        public Manager(string fileName):this(fileName,'#')
+        public Manager(string fileName) : this(fileName, '#')
         {
         }
 
+        private string fileName;
+        private char separator;
+        private int Count;
+        private long lastID;
+        private DateTime start;
+        private DateTime end;
+        private Employer[] employer;
 
         /// <summary>
         /// Парсит одну строку данных используя сепаратор и возвращает один новый Employer
         /// </summary>
         /// <param name="line">Строка для парсинга</param>
         /// <returns></returns>
-        Employer SeparateAndFill(string line)
+        private Employer SeparateAndFill(string line)
         {
             Employer employer = new Employer();
             string[] words; //= new string[7];
@@ -69,12 +69,11 @@ namespace HV7
             employer.birthPlace = words[6];
             return employer;
         }
-
         /// <summary>
         /// Выводит на печать информацию по одному заданному Employer
         /// </summary>
         /// <param name="employer">Объект для вывода информации</param>
-        void PrintEmployerInfo(Employer employer)
+        private void PrintEmployerInfo(Employer employer)
         {
             Console.WriteLine();
             Console.WriteLine($"{"ID:",40} {employer.ID}");
@@ -85,12 +84,11 @@ namespace HV7
             Console.WriteLine($"{"Дата рождения:",40} {employer.birthDate.ToShortDateString()}");
             Console.WriteLine($"{"Место рождения:",40} { employer.birthPlace}");
         }
-    
         /// <summary>
         /// Подметод печати. Печатает что дали
         /// </summary>
         /// <param name="employer">Дали</param>
-        void PrintEmployersInfo(Employer[] employer)
+        private void PrintEmployersInfo(Employer[] employer)
         {
             for (int i = 0; i < Count; i++)
             {
@@ -102,39 +100,9 @@ namespace HV7
             Console.ReadKey();
         }
         /// <summary>
-        /// Публичный метод. Печатает информацию о всех работниках на экране
-        /// Применяет все сортировки
-        /// </summary>
-        public void PrintEmployersInfo()
-        {
-            IEnumerable<Employer> employers;
-            
-            switch (sort) //сортировка
-            {
-                case ESort.SortUp:
-                    Array.Resize(ref this.employer, Count);
-                    employers = from word in this.employer
-                                                      orderby word.dateTime
-                                                      select word;
-                    break;
-                case ESort.SortDown:
-                    Array.Resize(ref this.employer, Count);
-                    employers = from word in this.employer
-                                                      orderby word.dateTime descending
-                                                      select word;
-                    break;
-                default:
-                    employers = this.employer;
-                    break;
-            }
-
-            PrintEmployersInfo(employers.ToArray());
-            
-        }
-        /// <summary>
         /// Установка диапазона дат для сортировки по датам
         /// </summary>
-        void SetSortingDateRange()
+        private void SetSortingDateRange()
         {
             start = Input<DateTime>("Введите нижний интервал дат для отображения", DateTime.Now.Date);
             end  = Input<DateTime>("Введите верхний интервал дат для отображения", DateTime.Now);
@@ -143,93 +111,17 @@ namespace HV7
         /// <summary>
         /// Сброс диапазона дат для сортировки по датам
         /// </summary>
-        void SetSortingDataRangeDefault()
+        private void SetSortingDataRangeDefault()
         {
             Console.WriteLine("Диапазон дат сброшен!");
             start = DateTime.MinValue;
             end = DateTime.MaxValue;
         }
         /// <summary>
-        /// Устанавливает сортировки (вызывает подменю)
-        /// </summary>
-        public void SetSorting()
-        {
-            while (true)
-            {
-                Console.WriteLine("Меню сортировки данных");
-                Console.WriteLine("1 - сброс диапазона дат");
-                Console.WriteLine("2 - установка диапазона дат");
-                Console.WriteLine("3 - сортировка по умолчанию");
-                Console.WriteLine("4 - сортировка по дате с самой ранней");
-                Console.WriteLine("5 - сортировка по дате с самой поздней");
-                Console.WriteLine("0 - ничо не надо");
-                switch (Console.ReadLine().ToLower())
-                {
-                    case "0": break;
-                    case "1":
-                        SetSortingDataRangeDefault();
-                        break;
-                    case "2":
-                        SetSortingDateRange();
-                        break;
-                    case "3":
-                        sort = ESort.Default;
-                        break;
-                    case "4":
-                        sort = ESort.SortUp;
-                        break;
-                    case "5":
-                        sort = ESort.SortDown;
-                        break;
-                    default:
-                        Console.WriteLine("Команда не распознана!");
-                        continue;
-                }
-                TitleClear();
-                break;
-            }
-        }
-
-        /// <summary>
-        /// Публичный метод. Печатает информацию на экране для сотрудника
-        /// </summary>
-        /// <param name="ID">ID сотрудника</param>
-        public void PrintEmployerInfo()
-        {
-            long ID = Input<long>("Введите ID работника:");
-            if (FindEmployerByID(ID, out Employer employer, out int index))
-            {
-                PrintEmployerInfo(this.employer[index]);
-            }
-            else
-            {
-                Console.WriteLine("Работник не найден!");
-            }
-            Console.ReadKey();
-        }
-
-        /// <summary>
-        /// Очищает консоль и выводит стандартный заголовок
-        /// </summary>
-        public void TitleClear()
-        {
-            string  info =  $"СОРТИРОВКА: {sort.ToString()}, ДИАПАЗОН ДАТ: {start.ToShortDateString()} - {end.ToShortDateString()}\n";
-                    info += $"КОЛИЧЕСТВО ЗАПИСЕЙ В БАЗЕ: {Count}, ПОСЛЕДНИЙ ID: {lastID}";
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("Справочник «Сотрудники»");
-            Console.WriteLine("=======================");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine(info);
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("=======================");
-            Console.ForegroundColor = ConsoleColor.White;
-        }
-        /// <summary>
         /// Добавляет в массив нового члена (с ресайзом данного массива, при необходимости в два раза от предыдущего значения)
         /// </summary>
         /// <param name="employer">Член для добавления</param>
-        void Add(Employer employer)
+        private void Add(Employer employer)
         {
             if (this.employer.Length <= Count)
             {
@@ -241,7 +133,7 @@ namespace HV7
         /// <summary>
         /// Чтение всех записей из файла базы данных
         /// </summary>
-        void LoadFile(string fileName)
+        private void LoadFile(string fileName)
         {
             TitleClear();
             Console.WriteLine("Чтение записей из файла базы данных...");
@@ -269,7 +161,7 @@ namespace HV7
         /// Сохранение файла базы данных
         /// </summary>
         /// <param name="fileName"></param>
-        void SaveFile(string fileName)
+        private void SaveFile(string fileName)
         {
             TitleClear();
             Console.WriteLine("Добавление записи в файл базы данных...");
@@ -295,48 +187,22 @@ namespace HV7
             }
             Console.ReadKey();
         }
-        public void DeleteRecord()
-        {
-            long ID = Input<long>("Введите ID работника:");
-
-            if (FindEmployerByID(ID, out Employer employer, out int index))
-            {   
-                Console.WriteLine($"Работник {this.employer[index].fio} будет удалён.");
-                Console.WriteLine("Для подтверждения введите y , для отмены n");
-                if (!(Console.ReadLine().ToLower() == "y")) return; //Если передумал то return
-                //Тут сдвигаем на текущего рабочего следующего -1
-                Count--;
-                for (int i = index; i < Count; i++)
-                {
-                    this.employer[i] = this.employer[i + 1];
-                }
-                SaveFile(this.fileName);
-                Console.WriteLine($"Работник {ID} крякнул.");
-            }
-            else
-            {
-                Console.WriteLine("Работник не найден!");
-            }
-            Console.ReadKey();
-        }
-
         /// <summary>
         /// Обьединяет (сериализует) данные структуры Employer в строку (одна линия), для передачи в поток 
         /// </summary>
         /// <param name="employer">Объект для сериализации</param>
         /// <returns></returns>
-        string CombineData(Employer employer)
+        private string CombineData(Employer employer)
         {
             return CombineData(1, employer);
         }
-
         /// <summary>
         /// Обьединяет (сериализует) данные структуры Employer в строку (много линий), для передачи в поток
         /// </summary>
         /// <param name="count">Количество объектов в массиве (количество будующих линий) для сериализации</param>
         /// <param name="employers">Объект для сериализации</param>
         /// <returns></returns>
-        string CombineData(int count, params Employer[] employers)
+        private string CombineData(int count, params Employer[] employers)
         {
             string res="";
             for(int i = 0; i < count; i++)
@@ -358,53 +224,6 @@ namespace HV7
             }
             return res;
         }
-
-        /// <summary>
-        /// Публичный метод. Добавление НОВОГО работника и сохранение в базу данных
-        /// </summary>
-        public void AddNewRecord()
-        {
-            Employer employer = new Employer();
-            //if (Count > 0)
-            //{
-            //    employer.ID = this.employer[Count - 1].ID + 1;//this.Count+1;//Input<long>("Введите ID работника:");
-            //}
-            //else
-            //{
-            //    employer.ID = 1;
-            //}
-            lastID++;
-            employer.ID = lastID;    
-            employer.dateTime = DateTime.Now;
-            employer.fio = Input<string>("Введите ФИО:");
-            employer.height = Input<int>("Введите рост:");
-            employer.birthDate = Input<DateTime>("Введите дату рождения:");
-            employer.birthPlace = Input<string>("Введите место рождения:");
-            Add(employer);
-            SaveFile(this.fileName);
-        }
-        /// <summary>
-        /// Редакторование записи
-        /// </summary>
-        public void EditRecord()
-        {
-            long ID = Input<long>("Введите ID работника:");
-            if(FindEmployerByID(ID, out Employer employer,out int index))
-            {
-                employer.dateTime = DateTime.Now;
-                employer.fio = Input<string>("Введите ФИО:", employer.fio);
-                employer.height = Input<int>("Введите рост:", employer.height);
-                employer.birthDate = Input<DateTime>("Введите дату рождения:", employer.birthDate);
-                employer.birthPlace = Input<string>("Введите место рождения:", employer.birthPlace);
-                this.employer[index] = employer;
-                SaveFile(this.fileName);
-            }
-            else
-            {
-                Console.WriteLine("Работник не найден!");
-            }
-            Console.ReadKey();
-        }
         /// <summary>
         /// Ищет работника по параметру если находит возвращает true
         /// Возвращает первое попавшееся совпадение, если их несколько
@@ -412,7 +231,7 @@ namespace HV7
         /// <param name="ID">Параметр для поиска</param>
         /// <param name="result">Возвращаемый объект</param>
         /// <returns></returns>
-        bool FindEmployerByID(long ID, out Employer result,out int index)
+        private bool FindEmployerByID(long ID, out Employer result,out int index)
         {
             index= 0;
             for (int i = 0; i < Count; i++)
@@ -427,7 +246,6 @@ namespace HV7
             result = new Employer();
             return false;
         }
-
         /// <summary>
         /// Мой личный улучшенный метод пользовательского ввода
         /// </summary>
@@ -491,6 +309,183 @@ namespace HV7
 
             } while (flag);
             return res;
+        }
+        /// <summary>
+        /// Публичный метод. Добавление НОВОГО работника и сохранение в базу данных
+        /// </summary>
+        public void AddNewRecord()
+        {
+            Employer employer = new Employer();
+            //if (Count > 0)
+            //{
+            //    employer.ID = this.employer[Count - 1].ID + 1;//this.Count+1;//Input<long>("Введите ID работника:");
+            //}
+            //else
+            //{
+            //    employer.ID = 1;
+            //}
+            lastID++;
+            employer.ID = lastID;    
+            employer.dateTime = DateTime.Now;
+            employer.fio = Input<string>("Введите ФИО:");
+            employer.height = Input<int>("Введите рост:");
+            employer.birthDate = Input<DateTime>("Введите дату рождения:");
+            employer.birthPlace = Input<string>("Введите место рождения:");
+            Add(employer);
+            SaveFile(this.fileName);
+        }
+        /// <summary>
+        /// Редакторование записи
+        /// </summary>
+        public void EditRecord()
+        {
+            long ID = Input<long>("Введите ID работника:");
+            if(FindEmployerByID(ID, out Employer employer,out int index))
+            {
+                employer.dateTime = DateTime.Now;
+                employer.fio = Input<string>("Введите ФИО:", employer.fio);
+                employer.height = Input<int>("Введите рост:", employer.height);
+                employer.birthDate = Input<DateTime>("Введите дату рождения:", employer.birthDate);
+                employer.birthPlace = Input<string>("Введите место рождения:", employer.birthPlace);
+                this.employer[index] = employer;
+                SaveFile(this.fileName);
+            }
+            else
+            {
+                Console.WriteLine("Работник не найден!");
+            }
+            Console.ReadKey();
+        }
+        /// <summary>
+        /// Удаляет запись
+        /// </summary>
+        public void DeleteRecord()
+        {
+            long ID = Input<long>("Введите ID работника:");
+
+            if (FindEmployerByID(ID, out Employer employer, out int index))
+            {   
+                Console.WriteLine($"Работник {this.employer[index].fio} будет удалён.");
+                Console.WriteLine("Для подтверждения введите y , для отмены n");
+                if (!(Console.ReadLine().ToLower() == "y")) return; //Если передумал то return
+                //Тут сдвигаем на текущего рабочего следующего -1
+                Count--;
+                for (int i = index; i < Count; i++)
+                {
+                    this.employer[i] = this.employer[i + 1];
+                }
+                SaveFile(this.fileName);
+                Console.WriteLine($"Работник {ID} крякнул.");
+            }
+            else
+            {
+                Console.WriteLine("Работник не найден!");
+            }
+            Console.ReadKey();
+        }
+        /// <summary>
+        /// Устанавливает сортировки (вызывает подменю)
+        /// </summary>
+        public void SetSorting()
+        {
+            while (true)
+            {
+                Console.WriteLine("Меню сортировки данных");
+                Console.WriteLine("1 - сброс диапазона дат");
+                Console.WriteLine("2 - установка диапазона дат");
+                Console.WriteLine("3 - сортировка по умолчанию");
+                Console.WriteLine("4 - сортировка по дате с самой ранней");
+                Console.WriteLine("5 - сортировка по дате с самой поздней");
+                Console.WriteLine("0 - ничо не надо");
+                switch (Console.ReadLine().ToLower())
+                {
+                    case "0": break;
+                    case "1":
+                        SetSortingDataRangeDefault();
+                        break;
+                    case "2":
+                        SetSortingDateRange();
+                        break;
+                    case "3":
+                        sort = ESort.Default;
+                        break;
+                    case "4":
+                        sort = ESort.SortUp;
+                        break;
+                    case "5":
+                        sort = ESort.SortDown;
+                        break;
+                    default:
+                        Console.WriteLine("Команда не распознана!");
+                        continue;
+                }
+                TitleClear();
+                break;
+            }
+        }
+        /// <summary>
+        /// Публичный метод. Печатает информацию на экране для сотрудника
+        /// </summary>
+        /// <param name="ID">ID сотрудника</param>
+        public void PrintEmployerInfo()
+        {
+            long ID = Input<long>("Введите ID работника:");
+            if (FindEmployerByID(ID, out Employer employer, out int index))
+            {
+                PrintEmployerInfo(this.employer[index]);
+            }
+            else
+            {
+                Console.WriteLine("Работник не найден!");
+            }
+            Console.ReadKey();
+        }
+        /// <summary>
+        /// Очищает консоль и выводит стандартный заголовок
+        /// </summary>
+        public void TitleClear()
+        {
+            string info = $"СОРТИРОВКА: {sort.ToString()}, ДИАПАЗОН ДАТ: {start.ToShortDateString()} - {end.ToShortDateString()}\n";
+            info += $"КОЛИЧЕСТВО ЗАПИСЕЙ В БАЗЕ: {Count}, ПОСЛЕДНИЙ ID: {lastID}";
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("Справочник «Сотрудники»");
+            Console.WriteLine("=======================");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(info);
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("=======================");
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+        /// <summary>
+        /// Публичный метод. Печатает информацию о всех работниках на экране
+        /// Применяет все сортировки
+        /// </summary>
+        public void PrintEmployersInfo()
+        {
+            IEnumerable<Employer> employers;
+
+            switch (sort) //сортировка
+            {
+                case ESort.SortUp:
+                    Array.Resize(ref this.employer, Count);
+                    employers = from word in this.employer
+                                orderby word.dateTime
+                                select word;
+                    break;
+                case ESort.SortDown:
+                    Array.Resize(ref this.employer, Count);
+                    employers = from word in this.employer
+                                orderby word.dateTime descending
+                                select word;
+                    break;
+                default:
+                    employers = this.employer;
+                    break;
+            }
+
+            PrintEmployersInfo(employers.ToArray());
+
         }
     }
 }
